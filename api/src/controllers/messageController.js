@@ -1,5 +1,5 @@
 const cloudinary = require("../lib/cloudinary");
-const {getReciverSocketId, io} = require("../lib/socket");
+const {getReceiverSockerId, io} = require("../lib/socket");
 
 const User = require("../models/userModel");
 const Message = require("../models/messageModel");
@@ -51,14 +51,18 @@ exports.getMessages = async (req, res) => {
 };
 
 exports.sendMessage = async (req, res) => {
+  console.log(req.body)
   try {
     const { text, image } = req.body;
     const { id: receiverId } = req.params;
-    const senderId = res.user._id;
+    const senderId = req.user._id;
 
     let imageUrl;
     if (image) {
-      const uploadResponse = cloudinary.uploader.upload(image);
+      const uploadResponse = await cloudinary.uploader.upload(image,{
+  resource_type: "image",
+  max_file_size: 10485760  // 10MB
+});
       imageUrl = uploadResponse.secure_url;
     }
 
@@ -75,7 +79,7 @@ exports.sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    const receiverSocketId = getReciverSocketId(receiverId);
+    const receiverSocketId = getReceiverSockerId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('newMessage', newMessage)
     }

@@ -5,6 +5,7 @@ const { generateToken } = require("../lib/utils");
 const User = require("../models/userModel");
 
 exports.signup = async (req, res) => {
+  console.log(req.body)
   const { fullName, email, password } = req.body;
   try {
     if (!fullName || !email || !password)
@@ -13,7 +14,7 @@ exports.signup = async (req, res) => {
         message: "Please provide all the required fields",
       });
 
-    if (password.length < 8)
+    if (password.length <= 6)
       return res.status(400).json({
         status: "error",
         message: "Password length must be atleast 8 characters",
@@ -27,13 +28,12 @@ exports.signup = async (req, res) => {
         message: "User already exists...Try logging in...",
       });
 
-    const salt = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    
 
     const newUser = new User({
       fullName,
       email,
-      password: hashedPassword,
+      password,
     });
 
     if (newUser) {
@@ -52,7 +52,7 @@ exports.signup = async (req, res) => {
       });
     }
   } catch (err) {
-    console.err("Error in signup controller, ", err.message);
+    console.error("Error in signup controller, ", err.message);
     return res.status(500).json({
       status: "error",
       message: "Internal server Error",

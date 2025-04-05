@@ -11,6 +11,7 @@ const io = new Server(server, {
   }
 })
 
+
 function getReceiverSockerId(userId) {
   return userSocketMap[userId]
 }
