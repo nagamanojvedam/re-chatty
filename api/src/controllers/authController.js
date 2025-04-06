@@ -80,15 +80,11 @@ exports.login = async (req, res) => {
       });
 
     generateToken(user._id, res);
+    user.password = undefined;
 
     return res.status(200).json({
       status: "success",
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        profilePic: user.profilePic,
-      },
+      user,
     });
   } catch (err) {
     console.error(`Error in login controller: ${err.message}`);

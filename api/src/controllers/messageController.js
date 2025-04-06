@@ -59,10 +59,7 @@ exports.sendMessage = async (req, res) => {
 
     let imageUrl;
     if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image,{
-  resource_type: "image",
-  max_file_size: 10485760  // 10MB
-});
+      const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
 
