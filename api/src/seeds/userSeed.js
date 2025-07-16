@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
 const User = require( "../models/userModel.js");
+
+dotenv.config();
 
 const seedUsers = [
   // Female Users
@@ -99,7 +102,7 @@ const seedUsers = [
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect('mongodb+srv://vedamnagamanoj:zdVMgmr68sPMivtd@chattycluster.o7mlii8.mongodb.net/chatty_db?retryWrites=true&w=majority&appName=ChattyCluster')
+    await mongoose.connect(process.env.MONGODB_CONNECTION_STRING)
 
     await User.insertMany(seedUsers);
     console.log("Database seeded successfully");
