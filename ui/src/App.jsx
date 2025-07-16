@@ -11,10 +11,11 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
-import NavBar from "./components/NavBar";
+
+import Navbar from "./components/Navbar";
 
 function App() {
-  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { theme } = useThemeStore();
 
   useEffect(() => {
@@ -29,7 +30,7 @@ function App() {
     );
   return (
     <div data-theme={theme}>
-      <NavBar />
+      <Navbar />
       <Routes>
         <Route
           path="/"
