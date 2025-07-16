@@ -44,7 +44,6 @@ export const useAuthStore = create((set, get) => ({
     try {
       const response = await axiosInstance.post("/auth/login", data);
       set({ authUser: response.data.user });
-      console.log(get().authUser);
       toast.success("Logged in successfully");
       get().connectSocket();
     } catch (error) {
@@ -83,7 +82,7 @@ export const useAuthStore = create((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io("http://localhost:3000", {
+    const socket = io("http://localhost:5000", {
       query: {
         userId: authUser._id,
       },

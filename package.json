@@ -1,0 +1,22 @@
+{
+  "name": "chatty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm i --prefix api && npm i --prefix ui && npm run build --prefix ui",
+    "start": "npm run start --prefix api"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagamanojvedam/chatty.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nagamanojvedam/chatty/issues"
+  },
+  "homepage": "https://github.com/nagamanojvedam/chatty#readme"
+}

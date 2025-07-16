@@ -13,7 +13,6 @@ const PREVIEW_MESSAGES = [
 
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
-  console.log(theme, THEMES);
 
   return (
     <div className="container mx-auto h-screen max-w-5xl px-4 pt-20">

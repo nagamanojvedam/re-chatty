@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path')
+const morgan = require('morgan')
 
 const connectDB = require('./lib/mongodb');
 
@@ -11,21 +12,37 @@ const messageRouter = require('./routes/messageRoutes')
 
 const {app, server} = require('./lib/socket')
 
-dotenv.config({'path': './config.env'});
+dotenv.config();
 
-// const __dirname = path.resolve();
-
+// Middleware
 app.use(express.json({limit: '10mb'}))
 app.use(cookieParser())
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}))
 
+// CORS
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+  }))
+  app.use(morgan('dev'))
+}
+
+// Routes
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/messages', messageRouter)
 
-server.listen(process.env.PORT, () => {
+// Static files for production
+if (process.env.NODE_ENV === 'production') {
+  const clientPath = path.resolve(__dirname, '../ui/dist')
+  
+  app.use(express.static(clientPath))
+  app.get('*', (req, res) => {
+    res.sendFile(clientPath, 'index.html')
+  })
+}
+
+// Start the server
+server.listen(process.env.PORT, async () => {
   console.log(`Express server running on PORT: ${process.env.PORT}`);
-  connectDB();
+  await connectDB();
 })

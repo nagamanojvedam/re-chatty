@@ -21,8 +21,6 @@ const ProfilePage = () => {
     };
   };
 
-  console.log(authUser);
-
   return (
     <div className="h-screen pt-20">
       <div className="mx-auto max-w-2xl p-4 py-8">

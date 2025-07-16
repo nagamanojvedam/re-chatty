@@ -5,7 +5,6 @@ const { generateToken } = require("../lib/utils");
 const User = require("../models/userModel");
 
 exports.signup = async (req, res) => {
-  console.log(req.body)
   const { fullName, email, password } = req.body;
   try {
     if (!fullName || !email || !password)

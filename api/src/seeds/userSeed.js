@@ -99,7 +99,7 @@ const seedUsers = [
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect('mongodb+srv://vedamnagamanoj:2eVNmyTl9Al6lrwp@chattycluster.o7mlii8.mongodb.net/chatty_db?retryWrites=true&w=majority&appName=ChattyCluster')
+    await mongoose.connect('mongodb+srv://vedamnagamanoj:zdVMgmr68sPMivtd@chattycluster.o7mlii8.mongodb.net/chatty_db?retryWrites=true&w=majority&appName=ChattyCluster')
 
     await User.insertMany(seedUsers);
     console.log("Database seeded successfully");
