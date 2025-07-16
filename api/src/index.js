@@ -42,7 +42,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Start the server
-server.listen(process.env.PORT, async () => {
-  console.log(`Express server running on PORT: ${process.env.PORT}`);
-  await connectDB();
-})
+(async () => {
+  try {
+    await connectDB();
+    server.listen(process.env.PORT, () => 
+    console.log(`✨ Express server running on PORT: ${process.env.PORT}`)
+);
+  }catch(err) {
+    console.error('❌ Failed to connect to MongoDB:', err);
+    process.exit(1);
+  }
+})()
+

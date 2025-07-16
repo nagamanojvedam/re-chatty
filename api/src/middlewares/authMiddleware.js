@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 
 exports.protect = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    const {jwt: token} = req.cookies;
 
     if (!token)
       return res.status(401).json({

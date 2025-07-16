@@ -5,10 +5,18 @@ import App from "./App.jsx";
 
 import { BrowserRouter } from "react-router-dom";
 
+const isDev = import.meta.env.VITE_ENV === "development";
+
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  isDev ? (
+    <StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </StrictMode>
+  ) : (
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </StrictMode>,
+  ),
 );
