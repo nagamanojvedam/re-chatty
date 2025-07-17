@@ -34,7 +34,6 @@ app.use('/api/v1/messages', messageRouter)
 // Static files for production
 if (process.env.NODE_ENV === 'production') {
   const clientPath = path.resolve(__dirname, '../../ui/dist')
-  console.log(clientPath)
   app.use(express.static(clientPath))
   app.get('*', (req, res) => {
     res.sendFile(clientPath, 'index.html')

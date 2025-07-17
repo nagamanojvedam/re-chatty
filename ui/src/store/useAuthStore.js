@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const baseURL =
-  import.meta.env.VITE_ENV === "development" ? "http://localhost:5000" : "/";
+  import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -76,6 +76,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profile updated successfully");
     } catch (error) {
       toast.error(`Error in update profile ${error}`);
+      console.error(`Error in update profile: ${error}`);
     } finally {
       set({ isUpdatingProfile: false });
     }
