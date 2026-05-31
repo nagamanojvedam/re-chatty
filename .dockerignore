@@ -1,9 +1,0 @@
-# .dockerignore
-node_modules
-ui/node_modules
-api/node_modules
-api/dist
-Dockerfile
-.git
-.gitignore
-.env
