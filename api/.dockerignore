@@ -4,3 +4,5 @@ pnpm-debug.log
 Dockerfile
 .dockerignore
 .env
+.gitignore
+.git
