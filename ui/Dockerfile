@@ -1,10 +1,11 @@
-FROM node:22-slim AS frontend
-
-RUN npm install -g pnpm@10
+# Stage 1: Build frontend
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN pnpm install --frozen-lockfile
 
@@ -12,11 +13,12 @@ COPY . .
 
 RUN pnpm build
 
-##################################################
+# Stage 2: nginx
 
-FROM nginx:stable-alpine
+FROM nginx:stable
 
-COPY --from=frontend /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

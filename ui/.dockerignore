@@ -3,3 +3,7 @@ npm-debug.log
 pnpm-debug.log
 .dockerignore
 .env
+.git
+.gitignore
+dist
+build
