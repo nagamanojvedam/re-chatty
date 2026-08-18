@@ -1,5 +1,5 @@
 const cloudinary = require("../lib/cloudinary");
-const {getReceiverSockerId, io} = require("../lib/socket");
+const { getReceiverSocketId, io } = require("../lib/socket");
 
 const User = require("../models/userModel");
 const Message = require("../models/messageModel");
@@ -13,7 +13,7 @@ exports.getUsersForSidebar = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      users:filteredUsers,
+      users: filteredUsers,
     });
   } catch (err) {
     console.error(`Error in getting users for sidebar, ${err.message}`);
@@ -75,9 +75,10 @@ exports.sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    const receiverSocketId = getReceiverSockerId(receiverId);
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit('newMessage', newMessage)
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
     return res.status(201).json({ status: "success", message: newMessage });

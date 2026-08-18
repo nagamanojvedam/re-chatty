@@ -12,7 +12,10 @@ services:
     restart: always
 
   ui:
-    build: ./ui
+    build:
+      context: ./ui
+      secrets:
+        - env
     container_name: re-chatty-ui
 
     ports:
@@ -22,3 +25,7 @@ services:
       - api
 
     restart: always
+
+secrets:
+  env:
+    file: ./ui/.env
