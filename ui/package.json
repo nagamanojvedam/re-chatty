@@ -1,8 +1,9 @@
 {
-  "name": "ui",
+  "name": "re-chatty-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": "Naga Manoj Vedam",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -34,5 +35,9 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "vite": "^6.2.0"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
   }
 }
