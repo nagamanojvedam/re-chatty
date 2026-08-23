@@ -1,0 +1,35 @@
+services:
+  api:
+    build: ./api
+    image: re-chatty-api:${IMAGE_TAG:-current}
+    container_name: re-chatty-api
+    ports:
+      - "3001:3000"
+    env_file:
+      - /opt/apps/re-chatty/api/.env
+    networks:
+      - re-chatty-network
+    restart: always
+
+  ui:
+    build:
+      context: ./ui
+      secrets:
+        - env
+    image: re-chatty-ui:${IMAGE_TAG:-current}
+    container_name: re-chatty-ui
+    ports:
+      - "8082:80"
+    depends_on:
+      - api
+    networks:
+      - re-chatty-network
+    restart: always
+
+networks:
+  re-chatty-network:
+    external: true
+
+secrets:
+  env:
+    file: /opt/apps/re-chatty/ui/.env

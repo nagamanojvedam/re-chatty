@@ -1,0 +1,177 @@
+name: re-chatty - prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Lightsail
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          command_timeout: 15m
+
+          script: |
+            cd /opt/apps/re-chatty
+
+            echo "Pulling latest code..."
+            git pull origin main
+
+
+            echo "Creating backup images..."
+
+            docker tag re-chatty-api:current re-chatty-api:backup
+            docker tag re-chatty-ui:current re-chatty-ui:backup
+
+
+            echo "Building new images..."
+
+            if IMAGE_TAG=new docker compose -f docker-compose.prod.yaml build
+            then
+
+              echo "Build successful."
+
+            else
+
+              echo "Build failed."
+              echo "Current application was not touched."
+              exit 1
+
+            fi
+
+
+            echo "Stopping current containers..."
+
+            docker stop \
+              re-chatty-api \
+              re-chatty-ui || true
+
+            docker rm \
+              re-chatty-api \
+              re-chatty-ui || true
+
+
+            echo "Starting new containers..."
+
+            if IMAGE_TAG=new docker compose -f docker-compose.prod.yaml up -d
+            then
+
+              echo "New containers started."
+
+            else
+
+              echo "Failed to start new containers."
+              echo "Rolling back..."
+
+              docker rm \
+                re-chatty-api \
+                re-chatty-ui || true
+
+              IMAGE_TAG=backup docker compose -f docker-compose.prod.yaml up -d
+
+              exit 1
+
+            fi
+
+
+            echo "Waiting for applications..."
+            sleep 5
+
+
+            echo "Checking api health..."
+
+            if curl --fail http://localhost:3001/health
+            then
+
+              echo "api health check passed."
+
+            else
+
+              echo "api health check failed."
+              echo "Rolling back..."
+
+              docker compose -f docker-compose.prod.yaml down || true
+
+              IMAGE_TAG=backup docker compose -f docker-compose.prod.yaml up -d
+
+              sleep 5
+
+              if curl --fail http://localhost:3001/health
+              then
+                echo "api rollback successful."
+              else
+                echo "api rollback failed. Manual intervention required."
+                exit 1
+              fi
+
+              docker rmi re-chatty-api:new || true
+              docker rmi re-chatty-ui:new || true
+
+              exit 1
+
+            fi
+
+
+            echo "Checking ui health..."
+
+            if curl --fail http://localhost:8082
+            then
+
+              echo "ui health check passed."
+
+            else
+
+              echo "ui health check failed."
+              echo "Rolling back..."
+
+              docker compose -f docker-compose.prod.yaml down || true
+
+              IMAGE_TAG=backup docker compose -f docker-compose.prod.yaml up -d
+
+              sleep 5
+
+              if curl --fail http://localhost:3001/health && \
+                 curl --fail http://localhost:8082
+              then
+
+                echo "Rollback successful."
+
+              else
+
+                echo "Rollback health check failed."
+                echo "Manual intervention required."
+                exit 1
+
+              fi
+
+              docker rmi re-chatty-api:new || true
+              docker rmi re-chatty-ui:new || true
+
+              exit 1
+
+            fi
+
+
+            echo "Both applications are healthy."
+
+
+            echo "Promoting new images..."
+
+            docker tag re-chatty-api:new re-chatty-api:current
+            docker tag re-chatty-ui:new re-chatty-ui:current
+
+
+            echo "Removing temporary images..."
+
+            docker rmi re-chatty-api:new || true
+            docker rmi re-chatty-ui:new || true
+
+
+            echo "Deployment successful."
