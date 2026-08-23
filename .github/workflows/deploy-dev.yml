@@ -1,0 +1,95 @@
+name: re-chatty - dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Backup current images
+        run: |
+          echo "Creating backup images..."
+
+          docker tag re-chatty-api:current re-chatty-api:backup || true
+          docker tag re-chatty-ui:current re-chatty-ui:backup || true
+      
+      - name: Build new images
+        run : |
+          echo "Building new images..."
+
+          IMAGE_TAG=new docker compose build
+      
+      - name: Stop existing containers
+        run: |
+          echo "Stopping old containers..."
+
+          docker stop \
+            re-chatty-api \
+            re-chatty-ui || true
+          
+          docker rm \
+            re-chatty-api \
+            re-chatty-ui || true
+      
+      - name: Start new containers
+        run: |
+          echo "Starting new containers..."
+
+          IMAGE_TAG=new docker compose up -d
+      
+      - name: Health checks
+        run: |
+          echo "Waiting for containers..."
+          sleep 5
+
+          echo "Checking api..."
+          curl --fail http://localhost:3000/health
+
+          echo "Checking ui..."
+          curl --fail http://localhost:8080
+
+          echo "Deployment successful ;)"
+      
+      - name: Promote new images
+        if: success()
+        run: |
+          echo "Promoting new images..."
+
+          docker tag re-chatty-api:new re-chatty-api:current
+          docker tag re-chatty-ui:new re-chatty-ui:current
+
+          docker rmi re-chatty-api:new || true
+          docker rmi re-chatty-ui:new || true
+
+      - name: Rollback
+        if: failure()
+        run: |
+          echo "Deployment failed. Rolling back..."
+
+          docker stop \
+            re-chatty-api \
+            re-chatty-ui || true
+
+          docker rm \
+            re-chatty-api \
+            re-chatty-ui || true
+
+          echo "Starting backup version..."
+
+          IMAGE_TAG=backup docker compose up -d
+      
+      - name: Cleanup unused images
+        run: |
+          echo "Removing temporary images..."
+
+          docker rmi re-chatty-api:new || true
+          docker rmi re-chatty-ui:new || true
+
+          docker image prune -f
