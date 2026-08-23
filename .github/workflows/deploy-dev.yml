@@ -50,10 +50,10 @@ jobs:
           sleep 5
 
           echo "Checking api..."
-          curl --fail http://localhost:3000/health
+          curl --fail http://localhost:3001/health
 
           echo "Checking ui..."
-          curl --fail http://localhost:8080
+          curl --fail http://localhost:8081
 
           echo "Deployment successful ;)"
       
