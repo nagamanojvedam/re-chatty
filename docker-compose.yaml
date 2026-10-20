@@ -6,7 +6,7 @@ services:
     ports:
       - "3001:3000"
     env_file:
-      - /home/venom/Projects/re-chatty/api/.env
+      - /opt/apps/re-chatty/api/.env
     networks:
       - re-chatty-network
     restart: always
@@ -19,7 +19,7 @@ services:
     image: re-chatty-ui:${IMAGE_TAG:-current}
     container_name: re-chatty-ui
     ports:
-      - "8081:80"
+      - "8082:80"
     depends_on:
       - api
     networks:
@@ -32,4 +32,4 @@ networks:
 
 secrets:
   env:
-    file: /home/venom/Projects/re-chatty/ui/.env
+    file: /opt/apps/re-chatty/ui/.env
