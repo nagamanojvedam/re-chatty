@@ -36,7 +36,7 @@ app.use("/api/v1/messages", messageRouter);
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "success",
-    message: "Server is running!",
+    message: "re-chatty api is running!",
     timeStamp: new Date().toISOString(),
   });
 });
