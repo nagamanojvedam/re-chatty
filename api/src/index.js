@@ -2,7 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const path = require("path");
 const morgan = require("morgan");
 
 const connectDB = require("./lib/mongodb");
@@ -32,15 +31,6 @@ if (process.env.NODE_ENV === "development") {
 // Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/messages", messageRouter);
-
-// Static files for production
-if (process.env.NODE_ENV === "production") {
-  const clientPath = path.resolve(__dirname, "../../ui/dist");
-  app.use(express.static(clientPath));
-  app.get("*", (req, res) => {
-    res.sendFile(clientPath, "index.html");
-  });
-}
 
 // Health check
 app.get("/health", (req, res) => {
